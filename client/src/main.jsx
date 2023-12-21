@@ -5,11 +5,9 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { ContextProvider } from "./context/MyContext.jsx";
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <ContextProvider>
-        <App />
-      </ContextProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <ContextProvider>
+      <App />
+    </ContextProvider>
+  </BrowserRouter>
 );

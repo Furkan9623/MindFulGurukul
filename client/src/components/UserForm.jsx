@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { addUserApi } from "../api/crud-api";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 const UserForm = () => {
   const initValue = {
     name: "",
@@ -19,10 +19,11 @@ const UserForm = () => {
     const result = await addUserApi(formInput);
     const error = result?.response?.data?.message;
     return result?.status === 200
-      ? (alert("user added successfull"), navigate("/"))
+      ? (toast.success("User added successfull", { theme: "colored" }),
+        navigate("/"))
       : error
-      ? alert(error)
-      : alert(result?.message);
+      ? toast.error(error, { theme: "colored" })
+      : toast.error(result?.message, { theme: "colored" });
   };
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">

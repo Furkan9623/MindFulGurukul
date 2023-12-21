@@ -1,15 +1,36 @@
 import axios from "axios";
-const URL = "http://localhost:8080/api/v1";
+
 const addUserApi = async (data) => {
   return axios
-    .post(`${URL}/crud-user/add-user`, data)
+    .post(`/api/v1/crud-user/add-user`, data)
     .then((res) => res)
     .catch((er) => er);
 };
-const getAllUerApi = async () => {
+
+const getAllUerApi = async (query, searchField, filter) => {
+  console.log("searchField", searchField);
+  let customUrl;
+  if (searchField === "name") {
+    customUrl = `/api/v1/crud-user/all-user?name=${query}&filter=${filter}`;
+  } else if (searchField === "phone" || filter) {
+    customUrl = `/api/v1/crud-user/all-user?phone=${query}&filter=${filter}`;
+  } else if (searchField === "email" || filter) {
+    customUrl = `/api/v1/crud-user/all-user?email=${query}&filter=${filter}`;
+  } else if (filter) {
+    customUrl = `/api/v1/crud-user/all-user?filter=${filter}`;
+  } else {
+    customUrl = `/api/v1/crud-user/all-user`;
+  }
   return axios
-    .get(`${URL}/crud-user/all-user`)
+    .get(customUrl)
     .then((res) => res)
     .catch((er) => er);
 };
-export { addUserApi, getAllUerApi };
+
+const deleteUserApi = async (id) => {
+  return axios
+    .delete(`/api/v1/crud-user/delete-user/${id}`)
+    .then((res) => res)
+    .catch((er) => er);
+};
+export { addUserApi, getAllUerApi, deleteUserApi };
