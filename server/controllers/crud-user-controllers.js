@@ -26,17 +26,73 @@ const addUserController = async (req, res, next) => {
 
 // get all user
 const getAllUserController = async (req, res, next) => {
+  console.log(req.query);
+  const { name, phone, email, filter } = req.query;
+  let obj = {};
+  if (name) {
+    obj.name = { $regex: name, $options: "i" };
+  } else if (phone) {
+    obj.phone = { $regex: phone, $options: "i" };
+  } else if (email) {
+    obj.email = { $regex: email, $options: "i" };
+  } else {
+    obj = {};
+  }
+
   try {
-    const result = await Cruduser.find({});
+    let result;
+    switch (filter) {
+      case "a-z":
+        result = await Cruduser.find(obj).sort({ name: 1 });
+        break;
+      case "z-a":
+        result = await Cruduser.find(obj).sort({ name: -1 });
+        break;
+      case "last-modify":
+        result = await Cruduser.find(obj).sort({ updatedAt: -1 });
+        break;
+      case "last-insert":
+        result = await Cruduser.find({ ...obj })
+          .sort({ createdAt: -1 })
+          .limit(1);
+        break;
+      default:
+        // Add a default sort option if needed
+        result = await Cruduser.find(obj);
+        break;
+    }
     if (!result)
-      return next(createError("No data found", 400, "get all user controller"));
+      return next(createError("No data found", 404, "get all user controller"));
+
     return res.status(200).json({
       success: true,
-      message: "all user",
+      message: "All users",
       alluser: result,
     });
   } catch (error) {
     return next(createError(error.message, 500, "get all user controller"));
   }
 };
-module.exports = { addUserController, getAllUserController };
+
+const deleteUserController = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id)
+    return next(
+      createError("Please provide valid id", 400, "deleteUserController")
+    );
+  try {
+    const result = await Cruduser.findByIdAndDelete({ _id: id });
+    return res.status(200).json({
+      success: true,
+      message: "user delete successfull",
+    });
+  } catch (error) {
+    return next(createError(error.message, 500, "delete controller"));
+  }
+};
+
+module.exports = {
+  addUserController,
+  getAllUserController,
+  deleteUserController,
+};

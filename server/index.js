@@ -8,6 +8,7 @@ const crudRouter = require("./routers/crud-router");
 require("dotenv").config();
 const app = express();
 app.get("/", (req, res) => res.send("Application ready...."));
+// app.use(express.static("dist"));
 const port = process.env.SERVER_PORT;
 // middleware
 app.use(cors());
