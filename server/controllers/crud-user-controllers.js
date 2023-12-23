@@ -49,7 +49,7 @@ const getAllUserController = async (req, res, next) => {
         result = await Cruduser.find(obj).sort({ name: -1 });
         break;
       case "last-modify":
-        result = await Cruduser.find(obj).sort({ updatedAt: -1 });
+        result = await Cruduser.find(obj).sort({ updatedAt: -1 }).limit(1);
         break;
       case "last-insert":
         result = await Cruduser.find({ ...obj })
@@ -91,8 +91,57 @@ const deleteUserController = async (req, res, next) => {
   }
 };
 
+// single user
+const singleUserController = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id)
+    return next(createError("Please provide id", 400, "single controller"));
+  try {
+    const result = await Cruduser.findOne({ _id: id });
+    return res.status(200).json({
+      success: true,
+      message: "user fetch",
+      user: result,
+    });
+  } catch (error) {
+    return next(createError(error.message, 500, "singel controller"));
+  }
+};
+// update user
+const updateUserController = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id)
+    return next(
+      createError("Please provide the id", 404, "update user controller")
+    );
+  const { name, email, phone } = req.body;
+  if (!name || !email || !phone)
+    return next(
+      createError(
+        "Please fill all the details...",
+        400,
+        "update user controller"
+      )
+    );
+  try {
+    const updateUser = await Cruduser.findByIdAndUpdate(
+      { _id: id },
+      { ...req.body },
+      { new: true }
+    );
+    return res.status(200).json({
+      success: true,
+      message: "update user successfull",
+      user: updateUser,
+    });
+  } catch (error) {
+    return next(createError(error.message, 500, "update controller"));
+  }
+};
 module.exports = {
   addUserController,
   getAllUserController,
   deleteUserController,
+  singleUserController,
+  updateUserController,
 };
