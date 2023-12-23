@@ -10,9 +10,11 @@ import Fab from "@mui/material/Fab";
 import { toast } from "react-toastify";
 import { deleteUserApi } from "../api/crud-api";
 import { loadingContext } from "../context/MyContext";
+import { useNavigate } from "react-router-dom";
 export default function SingleCard({ elem, getAllUser }) {
   const { _id, name, email, phone, gender } = elem;
   const { loading, setLoading } = React.useContext(loadingContext);
+  const navigate = useNavigate();
   const deleteUser = async () => {
     setLoading(true);
     const result = await deleteUserApi(_id);
@@ -24,6 +26,9 @@ export default function SingleCard({ elem, getAllUser }) {
       : error
       ? toast.error(error, { theme: "colored" })
       : toast.error(result?.message);
+  };
+  const editUser = () => {
+    navigate(`/edit-user/${_id}`);
   };
   return (
     <Card sx={{ padding: "10px 20px", width: 230, m: "auto" }}>
@@ -40,11 +45,11 @@ export default function SingleCard({ elem, getAllUser }) {
           Email : {email}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Phone : {phone}
+          Phone : +91 {phone}
         </Typography>
       </CardContent>
       <CardActions className="flex justify-between">
-        <Fab size="small" color="success" aria-label="edit">
+        <Fab size="small" color="success" aria-label="edit" onClick={editUser}>
           <EditIcon />
         </Fab>
         <Fab size="small" color="error" aria-label="add" onClick={deleteUser}>

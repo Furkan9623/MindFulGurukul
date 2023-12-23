@@ -33,4 +33,25 @@ const deleteUserApi = async (id) => {
     .then((res) => res)
     .catch((er) => er);
 };
-export { addUserApi, getAllUerApi, deleteUserApi };
+
+// single user
+const singleUserApi = async (id) => {
+  return axios
+    .get(`/api/v1/crud-user/single-user/${id}`)
+    .then((res) => res)
+    .catch((er) => er);
+};
+// update user
+const updateUserApi = async (id, data) => {
+  return axios
+    .patch(`/api/v1/crud-user/update-user/${id}`, data)
+    .then((res) => res)
+    .catch((er) => er);
+};
+export {
+  addUserApi,
+  getAllUerApi,
+  deleteUserApi,
+  singleUserApi,
+  updateUserApi,
+};

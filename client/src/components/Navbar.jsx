@@ -23,7 +23,7 @@ const Navbar = () => {
   return (
     <>
       <AppBar>
-        <Toolbar className="flex justify-between  bg-gray-950">
+        <Toolbar className="flex justify-between text-black bg-gray-300">
           <Link className="font-semibold  uppercase ml-11" to="/">
             Home
           </Link>

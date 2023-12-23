@@ -1,8 +1,10 @@
-import { useState } from "react";
-import { addUserApi } from "../api/crud-api";
+import { useEffect, useState } from "react";
+import { addUserApi, updateUserApi } from "../api/crud-api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-const UserForm = () => {
+const UserForm = ({ isEdit, editUser }) => {
+  console.log(editUser);
+
   const initValue = {
     name: "",
     phone: "",
@@ -13,13 +15,46 @@ const UserForm = () => {
   const handleChange = (e) => {
     setFormInput({ ...formInput, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    if (editUser) {
+      setFormInput(editUser);
+    }
+  }, [editUser]);
+  const { _id, name, email, phone } = formInput;
   const addUerFormSubmit = async (e) => {
     e.preventDefault();
     console.log(formInput);
+    if (phone.length <= 9 || phone.length > 10)
+      return toast.error("Phone number should be  exact 10 digit", {
+        theme: "colored",
+      });
     const result = await addUserApi(formInput);
     const error = result?.response?.data?.message;
     return result?.status === 200
       ? (toast.success("User added successfull", { theme: "colored" }),
+        navigate("/"))
+      : error
+      ? toast.error(error, { theme: "colored" })
+      : toast.error(result?.message, { theme: "colored" });
+  };
+
+  const updateUserFormSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      name === editUser?.name &&
+      phone === editUser?.phone &&
+      email === editUser?.email
+    )
+      return toast.error("Text still same as previous", { theme: "colored" });
+    else if (phone.length <= 9 || phone.length > 10)
+      return toast.error("Phone number should be  exact 10 digit", {
+        theme: "colored",
+      });
+    const result = await updateUserApi(_id, formInput);
+    const error = result?.response?.data?.message;
+    return result?.status === 200
+      ? (toast.success("User update successfull", { theme: "colored" }),
         navigate("/"))
       : error
       ? toast.error(error, { theme: "colored" })
@@ -32,10 +67,12 @@ const UserForm = () => {
         <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
           <div className="max-w-md mx-auto">
             <div>
-              <h1 className="text-2xl font-semibold">ADD NEW USER</h1>
+              <h1 className="text-2xl font-semibold">
+                {isEdit ? "UPDATE USER" : "ADD NEW USER"}
+              </h1>
             </div>
             <div className="divide-y divide-gray-200">
-              <form onSubmit={addUerFormSubmit}>
+              <form onSubmit={isEdit ? updateUserFormSubmit : addUerFormSubmit}>
                 <div className="py-4 text-base leading-6 space-y-8 text-gray-700 sm:text-lg sm:leading-7">
                   <div className="relative">
                     <input
@@ -43,13 +80,14 @@ const UserForm = () => {
                       id="name"
                       name="name"
                       type="text"
+                      value={name}
                       onChange={handleChange}
                       className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600"
                       placeholder="Enter Name"
                     />
                     <label
                       for="name"
-                      className="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                      className="absolute left-0 -top-3.5 cursor-text text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
                     >
                       Enter Name
                     </label>
@@ -60,13 +98,14 @@ const UserForm = () => {
                       id="phone"
                       name="phone"
                       type="number"
+                      value={phone}
                       onChange={handleChange}
                       className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600"
                       placeholder="Enter number"
                     />
                     <label
                       for="phone"
-                      className="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                      className="absolute left-0 -top-3.5 cursor-text text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
                     >
                       Phone Number
                     </label>
@@ -77,13 +116,14 @@ const UserForm = () => {
                       id="email"
                       name="email"
                       type="text"
+                      value={email}
                       onChange={handleChange}
-                      className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600"
+                      className="peer placeholder-transparent h-10 w-full  border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600"
                       placeholder="Email address"
                     />
                     <label
                       for="email"
-                      className="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                      className="absolute left-0 -top-3.5 cursor-text text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
                     >
                       Email Address
                     </label>
@@ -93,7 +133,7 @@ const UserForm = () => {
                       type="submit"
                       className="bg-blue-500 w-full uppercase font-semibold text-white text-sm rounded-md  py-1 pb-1.5"
                     >
-                      save
+                      {isEdit ? "UPDATE" : "save"}
                     </button>
                     <button
                       type="button"
