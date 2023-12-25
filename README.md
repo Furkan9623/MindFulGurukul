@@ -1,9 +1,9 @@
-# Metta-Social-Task
+# Mindful-Gurukul-Task
 
 
-# Find Countries based on currency
+# MindfulHub
 
- FrontEnd Deployed Link- https://mindful-gurukul-furkan-9623.netlify.app/
+ FrontEnd Deployed Link- https://mindful-gurukul-furkan-9623.netlify.app/ <br>
  Backend Deployed Link- https://mindful-server.onrender.com
 
 
